@@ -1,0 +1,31 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Docker volumes & databases
+mysql_data/
+postgres_data/
+redis_data/
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables (важно: ключи API и пароли не улетят в облако)
+.env
+*.env
+
+# Logs and Media
+*.log
+media/
+staticfiles/
+
+# IDE settings
+.idea/
+.vscode/
+*.iml

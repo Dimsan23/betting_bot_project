@@ -12,6 +12,9 @@ class Command(BaseCommand):
         league_key = kwargs['league']
         self.stdout.write(f"Запуск синхронизации для {league_key}...")
 
-        count = OddsService.sync_odds(league_key)
-
-        self.stdout.write(self.style.SUCCESS(f"Успешно обновлено {count} матчей."))
+        try:
+            # Вызываем сервис синхронизации
+            count = OddsService.sync_odds(league_key)
+            self.stdout.write(self.style.SUCCESS(f"Успешно обновлено {count} матчей."))
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"Ошибка при синхронизации: {e}"))

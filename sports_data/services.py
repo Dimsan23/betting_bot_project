@@ -1,3 +1,4 @@
+from django.utils import timezone
 import requests
 import os
 from sports_data.models import MatchStat, MatchOdds
@@ -11,6 +12,53 @@ TEAM_MAP = {
     'Portland Timbers': 'Portland Timbers', # Пример, если API отдает иначе
     'Chicago Fire FC': 'Chicago Fire',
     'St. Louis City SC': 'St. Louis City',
+# Russia Premier League (РПЛ)
+    'CSKA Moscow': 'CSKA Moscow',
+    'PFC CSKA Moscow': 'CSKA Moscow',
+    'FK Rostov': 'FK Rostov',
+    'Rostov': 'FK Rostov',
+    'Lokomotiv Moscow': 'Lokomotiv Moscow',
+    'Spartak Moscow': 'Spartak Moscow',
+    'Zenit': 'Zenit',
+    'Zenit St. Petersburg': 'Zenit',
+    'Krylya Sovetov': 'Krylya Sovetov',
+    'Akhmat Grozny': 'Akhmat Grozny',
+    'Akhmat': 'Akhmat Grozny',
+    'Krasnodar': 'Krasnodar',
+    'Rubin Kazan': 'Rubin Kazan',
+    'Rubin': 'Rubin Kazan',
+    'Dynamo Moscow': 'Dynamo Moscow',
+    'Dinamo Moscow': 'Dynamo Moscow',
+    # Дополнительные команды, найденные в файле:
+    'M. Saransk': 'Mordovia Saransk',
+    'Volga N. Novgorod': 'Volga Nizhny Novgorod',
+    'Vladikavkaz': 'Alania Vladikavkaz',
+    'Amkar': 'Amkar Perm',
+    'FK Anzi Makhackala': 'Anzhi Makhachkala',
+    'Kuban': 'Kuban Krasnodar',
+    'Ufa': 'Ufa',
+    'Ural': 'Ural Yekaterinburg',
+    'Arsenal Tula': 'Arsenal Tula',
+    'T. Moscow': 'Torpedo Moscow',
+    'SKA Khabarovsk': 'SKA Khabarovsk',
+    'Tomsk': 'Tom Tomsk',
+    'Yenisey': 'Yenisey Krasnoyarsk',
+    'Tosno': 'Tosno',
+    'Orenburg': 'Orenburg',
+    'Tambov': 'Tambov',
+    'Sochi': 'Sochi',
+    'Pari NN': 'FC Pari Nizhny Novgorod',
+    'Khimki': 'Khimki',
+    'Torpedo Moscow': 'Torpedo Moscow',
+    'Fakel Voronezh': 'Fakel Voronezh',
+    'Baltika': 'Baltika Kaliningrad',
+    'Akron Togliatti': 'Akron Tolyatti',
+    'Dynamo Makhachkala': 'Dynamo Makhachkala',
+    'Rodina Moscow': 'Rodina Moscow',
+    # Команды из стыковых матчей:
+    'Spartak Nalchik': 'Spartak Nalchik',
+    'Volgar-Astrakhan': 'Volgar Astrakhan',
+    'Tosno': 'Tosno',
 }
 
 class OddsService:
@@ -30,6 +78,7 @@ class OddsService:
     def sync_odds(league_key):
         data = OddsService.get_odds_for_league(league_key)
         updated_count = 0
+        today = timezone.now().date()
 
         print(f"Всего матчей в API для {league_key}: {len(data)}")
 
@@ -38,9 +87,11 @@ class OddsService:
             home_name = OddsService.get_normalized_name(match_data['home_team'])
             away_name = OddsService.get_normalized_name(match_data['away_team'])
 
+            # Ищем только матчи, у которых дата равна сегодняшней или больше (будущие)
             match = MatchStat.objects.filter(
                 home_team__icontains=home_name[:5],
-                away_team__icontains=away_name[:5]
+                away_team__icontains=away_name[:5],
+                match_date__gte=today
             ).first()
 
             if match:
@@ -66,6 +117,6 @@ class OddsService:
                         print(f"Ошибка сопоставления цен для {home_name} vs {away_name}")
                         continue
             else:
-                print(f"НЕ НАЙДЕНО в базе: {home_name} vs {away_name}")
+                print(f"НЕ НАЙДЕНО актуального матча в базе (>= {today}): {home_name} vs {away_name}")
 
         return updated_count

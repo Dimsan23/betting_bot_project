@@ -1,31 +1,39 @@
-# Virtual Environment
+# === Virtual Environment ===
 venv/
 env/
 ENV/
+.venv/
 
-# Docker volumes & databases
+# === Docker volumes & databases ===
 mysql_data/
 postgres_data/
 redis_data/
 
-# Python
+# === Python ===
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 
-# Environment (СЕКРЕТЫ!)
+# === Environment (СЕКРЕТЫ!) ===
 .env
 .env.local
 .env.*.local
 
-# IDE
+# === IDE ===
 .idea/
 .vscode/
 *.swp
+*.swo
 
-# Logs
+# === Logs ===
 *.log
 logs/
 
-# Project
+# === Project ===
 new_library_root/
 *.bak
+
+# === OS ===
+.DS_Store
+Thumbs.db
